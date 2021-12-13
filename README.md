@@ -24,7 +24,7 @@ Then in any of your models:
 
 ```ruby
 class User < ApplicationRecord
-  include WhereAny
+  extend WhereAny
 
   # ...
 end
@@ -36,7 +36,7 @@ Or, to install these helpers for your entire application:
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  include WhereAny
+  extend WhereAny
 
   # ...
 end
