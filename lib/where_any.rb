@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'where_any_of/version'
+require_relative 'where_any/version'
 
 require 'active_support/concern'
 
-module WhereAnyOf
+module WhereAny
   include ActiveSupport::Concern
 
   class_methods do
@@ -31,7 +31,7 @@ module WhereAnyOf
   end
 
   included do
-    scope :where_any_of, lambda { |column, values|
+    scope :where_any, lambda { |column, values|
       return none if values.blank?
 
       arel_column   = arel_table[column]
@@ -40,13 +40,13 @@ module WhereAnyOf
       where(arel_column.eq(any_of_values))
     }
 
-    scope :where_not_any_of, lambda { |column, values|
+    scope :where_none, lambda { |column, values|
       return all if values.blank?
 
       arel_column   = arel_table[column]
-      any_of_values = Arel::Nodes::NamedFunction.new('ANY', [bind_array(column, values)])
+      all_of_values = Arel::Nodes::NamedFunction.new('ALL', [bind_array(column, values)])
 
-      where(arel_column.not_eq(any_of_values))
+      where(arel_column.not_eq(all_of_values))
     }
   end
 end

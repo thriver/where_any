@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative 'lib/where_any_of/version'
+require_relative 'lib/where_any/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'where_any_of'
+  spec.name          = 'where_any'
   spec.version       = WhereAnyOf::VERSION
   spec.authors       = ['Minty Fresh']
   spec.email         = ['7896757+mintyfresh@users.noreply.github.com']
 
   spec.summary       = 'Postgres "ANY()" helpers for ActiveRecord.'
   spec.description   = spec.summary
-  spec.homepage      = 'https://github.com/thriver/where_any_of'
+  spec.homepage      = 'https://github.com/thriver/where_any'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
 
   spec.metadata['allowed_push_host']     = "TODO: Set to 'http://mygemserver.com'"

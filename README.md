@@ -1,6 +1,6 @@
-# Where Any Of
+# Where Any
 
-Helpers for using the PostgreSQL `ANY()` constraint in ActiveRecord queries. This provides the functionality of WHERE IN, but in a more prepared statement friendly way.
+Helpers for using the PostgreSQL `ANY()` and `ALL()` expressions in ActiveRecord queries. This provides the functionality of WHERE IN, but in a more prepared statement friendly way.
 
 Tested and validated only for PostgreSQL.
 
@@ -9,7 +9,7 @@ Tested and validated only for PostgreSQL.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'where_any_of'
+gem 'where_any'
 ```
 
 And then execute:
@@ -18,13 +18,13 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install where_any_of
+    $ gem install where_any
 
 Then in any of your models:
 
 ```ruby
 class User < ApplicationRecord
-  include WhereAnyOf
+  include WhereAny
 
   # ...
 end
@@ -36,7 +36,7 @@ Or, to install these helpers for your entire application:
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  include WhereAnyOf
+  include WhereAny
 
   # ...
 end
@@ -44,13 +44,13 @@ end
 
 ## Usage
 
-To make a where `ANY()` query, use the `where_any_of` method:
+To make a where `ANY()` query, use the `where_any` method:
 
 ```ruby
-User.where_any_of(:id, [1, 2, 3, 4, 5])
+User.where_any(:id, [1, 2, 3, 4, 5])
 ```
 
-The first argument of `where_any_of` refers to the column being tested, and the second argument is a list of values to include in the condition.
+The first argument of `where_any` refers to the column being tested, and the second argument is a list of values to include in the condition.
 
 Which would produce the following SQL:
 
@@ -61,18 +61,18 @@ SELECT "users".* FROM "users" WHERE "users"."id" = ANY($1)  [["id", "{1,2,3,4,5}
 It's also possible to construct a negated where `ANY()` query, like so:
 
 ```ruby
-User.where_not_any_of(:id, [1, 2, 3, 4, 5])
+User.where_none(:id, [1, 2, 3, 4, 5])
 ```
 
 Which would produce the following SQL:
 
 ```sql
-SELECT "users".* FROM "users" WHERE "users"."id" != ANY($1)  [["id", "{1,2,3,4,5}"]]
+SELECT "users".* FROM "users" WHERE "users"."id" != ALL($1)  [["id", "{1,2,3,4,5}"]]
 ```
 
 ### Where ANY vs. Where IN
 
-The advantage of using where `where_any_of` over ActiveRecord's built-in WHERE IN support is that it produces the same SQL statement regardless of the number of elements supplied. This is advantageous when using prepared statements, as the same statement can be reused regardless of the number of inputs supplied.
+The advantage of using where `where_any` over ActiveRecord's built-in WHERE IN support is that it produces the same SQL statement regardless of the number of elements supplied. This is advantageous when using prepared statements, as the same statement can be reused regardless of the number of inputs supplied.
 
 Consider for example:
 
@@ -83,9 +83,9 @@ User.where(id: [1, 2, 3, 4, 5])
 
 # Versus
 
-User.where_any_of(:id, [1, 2, 3])
-User.where_any_of(:id, [1, 2, 3, 4])
-User.where_any_of(:id, [1, 2, 3, 4, 5])
+User.where_any(:id, [1, 2, 3])
+User.where_any(:id, [1, 2, 3, 4])
+User.where_any(:id, [1, 2, 3, 4, 5])
 ```
 
 These sets of queries produce the following sets of SQL respectively:
@@ -108,7 +108,7 @@ Using the `ANY()` notation allows us to reuse the same query with the same numbe
 
 Using modern version of Postgres, there is no disadvantage to using `ANY()` from a query plan perspective.
 
-Here is an example query plan when using `where_any_of()`:
+Here is an example query plan when using `where_any()`:
 
 ```sql
 EXPLAIN for: SELECT "users".* FROM "users" WHERE "users"."id" = ANY($1) [["id", "{1,2,3,4,5}"]]
@@ -130,7 +130,8 @@ EXPLAIN for: SELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2, $3, $4
 (2 rows)
 ```
 
-Note how these two queries produced the exact same query plan. In most cases, it appears that Postgres treats these two operations as being one and the same.
+Note how these two queries produced the exact same query plan. According to the PostgreSQL manual, these operations are equivalent:
+https://www.postgresql.org/docs/current/functions-subquery.html#FUNCTIONS-SUBQUERY-ANY-SOME
 
 ## Development
 
@@ -140,4 +141,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/thriver/where_any_of.
+Bug reports and pull requests are welcome on GitHub at https://github.com/thriver/where_any.
