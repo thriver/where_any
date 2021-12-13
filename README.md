@@ -1,8 +1,8 @@
-# WhereAnyOf
+# Where Any Of
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/where_any_of`. To experiment with that code, run `bin/console` for an interactive prompt.
+Helpers for using the PostgreSQL `ANY()` constraint in ActiveRecord queries. This provides the functionality of WHERE IN, but in a more prepared statement friendly way.
 
-TODO: Delete this and the text above, and describe your gem
+Tested and validated only for PostgreSQL.
 
 ## Installation
 
@@ -20,9 +20,117 @@ Or install it yourself as:
 
     $ gem install where_any_of
 
+Then in any of your models:
+
+```ruby
+class User < ApplicationRecord
+  include WhereAnyOf
+
+  # ...
+end
+```
+
+Or, to install these helpers for your entire application:
+
+```ruby
+class ApplicationRecord < ActiveRecord::Base
+  self.abstract_class = true
+
+  include WhereAnyOf
+
+  # ...
+end
+```
+
 ## Usage
 
-TODO: Write usage instructions here
+To make a where `ANY()` query, use the `where_any_of` method:
+
+```ruby
+User.where_any_of(:id, [1, 2, 3, 4, 5])
+```
+
+The first argument of `where_any_of` refers to the column being tested, and the second argument is a list of values to include in the condition.
+
+Which would produce the following SQL:
+
+```sql
+SELECT "users".* FROM "users" WHERE "users"."id" = ANY($1)  [["id", "{1,2,3,4,5}"]
+```
+
+It's also possible to construct a negated where `ANY()` query, like so:
+
+```ruby
+User.where_not_any_of(:id, [1, 2, 3, 4, 5])
+```
+
+Which would produce the following SQL:
+
+```sql
+SELECT "users".* FROM "users" WHERE "users"."id" != ANY($1)  [["id", "{1,2,3,4,5}"]]
+```
+
+### Where ANY vs. Where IN
+
+The advantage of using where `where_any_of` over ActiveRecord's built-in WHERE IN support is that it produces the same SQL statement regardless of the number of elements supplied. This is advantageous when using prepared statements, as the same statement can be reused regardless of the number of inputs supplied.
+
+Consider for example:
+
+```ruby
+User.where(id: [1, 2, 3])
+User.where(id: [1, 2, 3, 4])
+User.where(id: [1, 2, 3, 4, 5])
+
+# Versus
+
+User.where_any_of(:id, [1, 2, 3])
+User.where_any_of(:id, [1, 2, 3, 4])
+User.where_any_of(:id, [1, 2, 3, 4, 5])
+```
+
+These sets of queries produce the following sets of SQL respectively:
+
+```sql
+SELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2, $3)  [["id", 1], ["id", 2], ["id", 3]]
+SELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2, $3, $4)  [["id", 1], ["id", 2], ["id", 3], ["id", 4]]
+SELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2, $3, $4, $5)  [["id", 1], ["id", 2], ["id", 3], ["id", 4], ["id", 5]]
+
+-- Versus
+
+SELECT "users".* FROM "users" WHERE "users"."id" = ANY($1)  [["id", "{1,2,3}"]]
+SELECT "users".* FROM "users" WHERE "users"."id" = ANY($1)  [["id", "{1,2,3,4}"]]
+SELECT "users".* FROM "users" WHERE "users"."id" = ANY($1)  [["id", "{1,2,3,4,5}"]]
+```
+
+Using the `ANY()` notation allows us to reuse the same query with the same number of parameter binds regardless of what number of inputs are supplied.
+
+### Performance
+
+Using modern version of Postgres, there is no disadvantage to using `ANY()` from a query plan perspective.
+
+Here is an example query plan when using `where_any_of()`:
+
+```sql
+EXPLAIN for: SELECT "users".* FROM "users" WHERE "users"."id" = ANY($1) [["id", "{1,2,3,4,5}"]]
+                                 QUERY PLAN
+----------------------------------------------------------------------------
+ Index Scan using users_pkey on users
+   Index Cond: (id = ANY ('{1,2,3,4,5}'::integer[]))
+(2 rows)
+```
+
+And here is the query plan when using ActiveRecord's WHERE IN:
+
+```sql
+EXPLAIN for: SELECT "users".* FROM "users" WHERE "users"."id" IN ($1, $2, $3, $4, $5) [["id", 1], ["id", 2], ["id", 3], ["id", 4], ["id", 5]]
+                                 QUERY PLAN
+----------------------------------------------------------------------------
+ Index Scan using users_pkey on users
+   Index Cond: (id = ANY ('{1,2,3,4,5}'::integer[]))
+(2 rows)
+```
+
+Note how these two queries produced the exact same query plan. In most cases, it appears that Postgres treats these two operations as being one and the same.
 
 ## Development
 
@@ -32,4 +140,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/where_any_of.
+Bug reports and pull requests are welcome on GitHub at https://github.com/thriver/where_any_of.

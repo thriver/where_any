@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Postgres "ANY()" helpers for ActiveRecord.'
   spec.description   = spec.summary
-  spec.homepage      = 'https://github.com/mintyfresh/where_any_of'
+  spec.homepage      = 'https://github.com/thriver/where_any_of'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
 
   spec.metadata['allowed_push_host']     = "TODO: Set to 'http://mygemserver.com'"
