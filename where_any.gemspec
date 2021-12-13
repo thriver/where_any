@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Minty Fresh']
   spec.email         = ['7896757+mintyfresh@users.noreply.github.com']
 
-  spec.summary       = 'Postgres "ANY()" helpers for ActiveRecord.'
+  spec.summary       = 'Postgres ANY() and ALL() expressions for ActiveRecord.'
   spec.description   = spec.summary
   spec.homepage      = 'https://github.com/thriver/where_any'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
