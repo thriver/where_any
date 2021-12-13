@@ -31,6 +31,10 @@ module WhereAny
   end
 
   included do
+    # @!method where_any(column, values)
+    #   @param column [String, Symbol]
+    #   @param values [Array<Object>]
+    #   @return [ActiveRecord::Relation]
     scope :where_any, lambda { |column, values|
       return none if values.blank?
 
@@ -40,6 +44,10 @@ module WhereAny
       where(arel_column.eq(any_of_values))
     }
 
+    # @!method where_none(column, values)
+    #   @param column [String, Symbol]
+    #   @param values [Array<Object>]
+    #   @return [ActiveRecord::Relation]
     scope :where_none, lambda { |column, values|
       return all if values.blank?
 
