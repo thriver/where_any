@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    where_any_of (0.1.0)
+    where_any (0.1.0)
       activerecord (>= 5.2.0, < 8)
 
 GEM
@@ -71,7 +71,7 @@ DEPENDENCIES
   rspec (~> 3.0)
   rubocop (~> 1.23)
   rubocop-rspec (~> 2.6)
-  where_any_of!
+  where_any!
 
 BUNDLED WITH
    2.2.17

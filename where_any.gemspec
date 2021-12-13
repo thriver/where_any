@@ -4,7 +4,7 @@ require_relative 'lib/where_any/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'where_any'
-  spec.version       = WhereAnyOf::VERSION
+  spec.version       = WhereAny::VERSION
   spec.authors       = ['Minty Fresh']
   spec.email         = ['7896757+mintyfresh@users.noreply.github.com']
 
