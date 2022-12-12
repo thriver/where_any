@@ -4,6 +4,19 @@ require_relative 'where_any/version'
 
 module WhereAny
   # @param name [String]
+  # @return [ActiveRecord::Type::Value]
+  def array_type_for_attribute(name)
+    element_type = type_for_attribute(name)
+
+    if (type = element_type.type)
+      ActiveRecord::Type.lookup(type, array: true)
+    else
+      # For unknown types (e.g. from projected columns), use a generic array type.
+      ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Array.new(element_type)
+    end
+  end
+
+  # @param name [String]
   # @param value [Object]
   # @return [Arel::Nodes::Node]
   def bind_param(name, value)
@@ -17,8 +30,7 @@ module WhereAny
   # @param value [Object]
   # @return [Arel::Nodes::Node]
   def bind_array(name, value)
-    element_type    = type_for_attribute(name)
-    attribute_type  = ActiveRecord::Type.lookup(element_type.type, array: true)
+    attribute_type  = array_type_for_attribute(name)
     query_attribute = ActiveRecord::Relation::QueryAttribute.new(name.to_s, value, attribute_type)
 
     Arel::Nodes::BindParam.new(query_attribute)
