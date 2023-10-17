@@ -1,10 +1,14 @@
 require:
+  - rubocop-performance
   - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 2.5
   NewCops: enable
   SuggestExtensions: false
+
+Gemspec/DevelopmentDependencies:
+  EnforcedStyle: gemspec
 
 Layout/LineLength:
   Max: 120

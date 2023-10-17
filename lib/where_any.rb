@@ -42,10 +42,18 @@ module WhereAny
   def where_any(column, values)
     return none if values.blank?
 
+    if (includes_null = values.include?(nil))
+      values = values.compact
+      return where(column => nil) if values.empty?
+    end
+
     arel_column   = arel_table[column]
     any_of_values = Arel::Nodes::NamedFunction.new('ANY', [bind_array(column, values)])
 
-    where(arel_column.eq(any_of_values))
+    scope = where(arel_column.eq(any_of_values))
+    scope = scope.or(where(column => nil)) if includes_null
+
+    scope
   end
 
   # @param column [String, Symbol]
@@ -54,9 +62,17 @@ module WhereAny
   def where_none(column, values)
     return all if values.blank?
 
+    if (includes_null = values.include?(nil))
+      values = values.compact
+      return where.not(column => nil) if values.empty?
+    end
+
     arel_column   = arel_table[column]
     all_of_values = Arel::Nodes::NamedFunction.new('ALL', [bind_array(column, values)])
 
-    where(arel_column.not_eq(all_of_values))
+    scope = where(arel_column.not_eq(all_of_values))
+    scope = scope.where.not(column => nil) if includes_null
+
+    scope
   end
 end
