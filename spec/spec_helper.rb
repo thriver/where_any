@@ -17,25 +17,4 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
-
-  # Clean database between tests
-  config.before(:suite) do
-    # Create tables needed for tests
-    ActiveRecord::Schema.define do
-      create_table :test_records, force: true do |t|
-        t.integer :number
-        t.string :text
-        t.timestamps
-      end
-    end
-  end
-
-  config.after do
-    # Clean up data after each test
-    ActiveRecord::Base.connection.tables.each do |table|
-      next if table == 'schema_migrations'
-
-      ActiveRecord::Base.connection.execute("TRUNCATE #{table} RESTART IDENTITY CASCADE")
-    end
-  end
 end
