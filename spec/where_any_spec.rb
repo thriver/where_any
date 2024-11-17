@@ -23,6 +23,10 @@ RSpec.describe WhereAny do
     @record_null = @model_class.create!(name: nil, reference: nil)
   end
 
+  it 'has a version number' do
+    expect(WhereAny::VERSION).not_to be_nil
+  end
+
   describe '#where_any' do
     it 'finds records matching any value in the array' do
       result = @model_class.where_any(:reference, %w[1 2])

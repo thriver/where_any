@@ -10,7 +10,7 @@ namespace :db do
   end
 end
 
-RSpec::Core::RakeTask.new(:spec => 'db:prepare')
+RSpec::Core::RakeTask.new(spec: 'db:prepare')
 
 require 'rubocop/rake_task'
 

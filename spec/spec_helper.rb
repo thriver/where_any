@@ -2,7 +2,6 @@
 
 require 'active_record'
 require 'where_any'
-require 'debug'
 
 # Configure test database connection
 db_config = YAML.load_file('config/database.yml', aliases: true)['test']
@@ -31,10 +30,11 @@ RSpec.configure do |config|
     end
   end
 
-  config.after(:each) do
+  config.after do
     # Clean up data after each test
     ActiveRecord::Base.connection.tables.each do |table|
       next if table == 'schema_migrations'
+
       ActiveRecord::Base.connection.execute("TRUNCATE #{table} RESTART IDENTITY CASCADE")
     end
   end
