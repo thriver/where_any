@@ -2,6 +2,9 @@ name: Ruby
 
 on: [push,pull_request]
 
+env:
+  RAILS_ENV: test
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -9,11 +12,9 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          PGHOST: localhost
-          PGPORT: 5432
-          PGUSER: postgres
-          PGPASSWORD: postgres
-          RAILS_ENV: test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
         ports:
           - 5432:5432
         options: >-
@@ -31,4 +32,9 @@ jobs:
       - name: Rubocop
         run: bin/rubocop
       - name: RSpec
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
         run: bin/rspec
