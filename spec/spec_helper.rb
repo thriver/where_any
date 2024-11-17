@@ -5,11 +5,8 @@ require 'where_any'
 require 'debug'
 
 # Configure test database connection
-ActiveRecord::Base.establish_connection(
-  adapter: 'postgresql',
-  database: 'where_any_test',
-  host: 'localhost'
-)
+db_config = YAML.load_file('config/database.yml', aliases: true)['test']
+ActiveRecord::Base.establish_connection(db_config)
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

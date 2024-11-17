@@ -1,0 +1,8 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  prepared_statements: true
+
+test: &test
+  <<: *default
+  database: where_any_test

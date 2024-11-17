@@ -9,12 +9,6 @@ RSpec.describe WhereAny do
       extend WhereAny
     end
 
-    ActiveRecord::Base.establish_connection(
-      adapter: 'postgresql',
-      database: 'where_any_test',
-      host: 'localhost'
-    )
-
     ActiveRecord::Schema.define do
       create_table :test_models, temporary: true, force: true do |t|
         t.string :name
