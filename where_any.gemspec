@@ -30,11 +30,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Uncomment to register a new dependency of your gem
-  spec.add_dependency 'activerecord', '>= 5.2.0', '< 8'
+  spec.add_dependency 'activerecord', '>= 5.2.0', '< 8.1'
 
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.10'
   spec.add_development_dependency 'rubocop', '~> 1.23'
   spec.add_development_dependency 'rubocop-performance', '~> 1.19'
   spec.add_development_dependency 'rubocop-rspec', '~> 2.6'
+  spec.add_development_dependency 'pg', '~> 1.5'
 end
