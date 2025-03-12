@@ -2,11 +2,28 @@ name: Ruby
 
 on: [push,pull_request]
 
+env:
+  RAILS_ENV: test
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: where_any_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -15,4 +32,9 @@ jobs:
       - name: Rubocop
         run: bin/rubocop
       - name: RSpec
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
         run: bin/rspec

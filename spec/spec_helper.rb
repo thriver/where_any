@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+require 'active_record'
 require 'where_any'
+
+# Configure test database connection
+db_config = YAML.load_file('config/database.yml', aliases: true)['test']
+ActiveRecord::Base.establish_connection(db_config)
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -23,3 +23,9 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   Enabled: true
   EnforcedStyle: double_quotes
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/BeforeAfterAll:
+  Enabled: false
