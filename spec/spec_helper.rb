@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'concurrent'
+require 'logger'
 require 'active_record'
 require 'where_any'
 
