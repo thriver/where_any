@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Uncomment to register a new dependency of your gem
-  spec.add_dependency 'activerecord', '>= 5.2.0', '< 8.1'
+  spec.add_dependency 'activerecord', '>= 5.2.0', '< 8.2'
 
   spec.add_development_dependency 'concurrent-ruby'
   spec.add_development_dependency 'pg', '~> 1.5'
